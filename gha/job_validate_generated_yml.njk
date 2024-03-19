@@ -1,0 +1,39 @@
+{#
+Copyright 2022 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% extends "job.njk" %}
+
+{%block name %}validate_web_yml{% endblock %}
+
+{%block steps %}
+      - name: npm run gha:generate
+        id: gha_generate
+        run: |
+          readonly GENERATED_FILE=${{ runner.temp }}/web.yml.generated
+          npm run gha:generate -- -o ${GENERATED_FILE}
+          echo "generated_file=${GENERATED_FILE}" >>$GITHUB_OUTPUT
+
+      - name: diff generated web.yml
+        run: |
+          if diff ../.github/workflows/web.yml ${{ steps.gha_generate.outputs.generated_file }} ; then
+            echo "Validation completed successfully: the generated web.yml does _not_ differ from the one checked into Git."
+          else
+            echo "ERROR: The generated web.yml differs from the one checked into Git."
+            echo "To fix, regenerate web.yml by running"
+            echo "cd web && npm run gha:generate"
+            exit 1
+          fi
+{% endblock %}
