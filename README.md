@@ -10,7 +10,9 @@
 1. Run `npm run build` to generate the compiled JavaScript.
 2. Run `npm run serve` to start an HTTP server.
 3. Open `http://localhost:9080/` in a web browser.
-4. Click the "Run Test" button.
+4. In the "Network" tab of Chrome Developer Tools, add a "Throttling" profile
+   with the settings 10 Mbit up, 10 Mbit down, 20 ms delay.
+5. Click the "Run Test" button.
 
 ## Run in Node.js
 
